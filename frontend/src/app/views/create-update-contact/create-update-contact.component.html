@@ -1,0 +1,178 @@
+
+
+<!-- SEARCH FIELD -->
+<div class="col-12 search-container">
+    <mat-form-field class="example-full-width col-12">
+    <mat-label class="custom-mat-label">{{'search_field_label' | langPipe}}</mat-label>
+        <input type="text"
+            placeholder="{{'enter_a_name_or_surname' | langPipe}}"
+            matInput
+            [matAutocomplete]="auto"
+            (keydown)="searchFieldKeyDown($event)"
+            value="{{getFullName()}}">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectAContact($event)">
+            <mat-option *ngFor="let contact of contacts"
+                        [value]="contact">
+            {{contact.name + ' ' + contact.surname}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+</div>
+<!-- /SEARCH FIELD -->
+<mat-card class="card">
+
+    <!-- Title -->
+    <mat-card-header>      
+        <mat-card-title>{{((contact.id)?'update_contact_title':'create_contact_title') | langPipe}} </mat-card-title>
+    </mat-card-header>
+    <!-- /Title -->
+
+    <!-- Contact Form -->
+    <form autocomplete="off" 
+        novalidate 
+        [formGroup]="contactForm" 
+        (ngSubmit)="submit()">
+        <mat-card-content>
+
+            <!-- Id field(hidden) -->
+            <mat-form-field [hidden]="true">
+                <input matInput
+                        type="text"
+                        id="idField"
+                        name="idField" 
+                        formControlName="id">
+            </mat-form-field>
+
+            <!-- name field -->
+            <mat-form-field class="full-width col-12 col-sm-6">
+                <mat-label class="custom-mat-label">{{'name_label' | langPipe}}</mat-label>
+                <input matInput
+                        appName
+                        placeholder=""
+                        type="text"
+                        id="nameField"
+                        name="nameField" 
+                        formControlName="name">
+                <mat-error *ngIf="contactForm.controls.name?.invalid || contactForm.controls.name?.errors?.required">
+                    {{(contactForm.controls.name.errors.required)?('this_field_cannot_be_empty' | langPipe):('invalid_input' | langPipe)}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- surname field -->
+            <mat-form-field class="full-width col-12 col-sm-6">
+                <mat-label class="custom-mat-label">{{'surname_label' | langPipe}}</mat-label>
+                <input matInput
+                        appName
+                        placeholder=""
+                        type="text"
+                        id="surnameField"
+                        name="surnameField" 
+                        formControlName="surname"
+                        pattern="[a-zA-Z0-9\.\-]*">
+                <mat-error *ngIf="contactForm.controls.name?.invalid || contactForm.controls.name?.errors?.required">
+                    {{(contactForm.controls.name.errors.required)?('this_field_cannot_be_empty' | langPipe):('invalid_input' | langPipe)}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- phone field -->
+            <mat-form-field class="full-width col-12 col-sm-6">
+                <mat-label class="custom-mat-label">{{'phone_label' | langPipe}}</mat-label>
+                <input matInput
+                        appPhone
+                        placeholder=""
+                        type="text"
+                        id="phoneField"
+                        name="phoneField" 
+                        formControlName="phone">
+                <mat-error *ngIf="hasError('phone', 'required')">{{'this_field_cannot_be_empty' | langPipe}}</mat-error>
+            </mat-form-field>
+
+            <!-- birthdate field -->
+            <mat-form-field class="full-width col-12 col-sm-6">
+                <mat-label>{{'birthdate_label' | langPipe}}</mat-label>
+                <input matInput [matDatepicker]="picker"
+                        id="birthdateField"
+                        placeholder="{{'choose_a_date' | langPipe}}"
+                        name="birthdateField" 
+                        formControlName="birthdate"
+                        [max]="maxBirthdate" 
+						[min]="minBirthdate" 
+                        [matDatepicker]="picker">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-error *ngIf="contactForm.controls?.birthdate?.invalid && contactForm.controls?.birthdate?.value">
+                    {{'invalid_birthdate' | langPipe}}
+                </mat-error>
+                <mat-error *ngIf="hasError('birthdate', 'required')">{{'this_field_cannot_be_empty' | langPipe}}</mat-error>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- postalCode field -->
+            <mat-form-field class="full-width col-12 col-sm-6">
+                <mat-label class="custom-mat-label">{{'postal_code_label' | langPipe}}</mat-label>
+                <input matInput
+                    placeholder=""
+                    type="text"
+                    id="postalCodeField"
+                    name="postalCodeField"
+                    formControlName="postalCode"							
+                    (keyup)="postalCodeChange($event)">
+                <mat-error
+                    *ngIf="contactForm.controls.postalCode?.invalid || contactForm.controls.postalCode?.errors?.required">
+                    {{(contactForm.controls.postalCode.errors.required)?('this_field_cannot_be_empty' | langPipe):('invalid_postal_code' | langPipe)}}
+                </mat-error>
+            </mat-form-field>
+
+            <!-- city field -->
+            <mat-form-field class="full-width col-12 col-sm-6">
+                <mat-label class="custom-mat-label">{{'city_label' | langPipe}}</mat-label>
+                <input matInput
+                    placeholder="Ort" 
+                    type="text" 
+                    id="cityField" 
+                    name="cityField"
+                    formControlName="city"
+                    [readonly]="true">
+
+                <mat-error *ngIf="((!cities || cities?.length === 1) && hasError('city', 'required'))">{{'this_field_cannot_be_empty' | langPipe}}</mat-error>
+            </mat-form-field>
+
+            <!-- street field -->
+            <mat-form-field class="full-width col-12 col-sm-6">
+                <mat-label class="custom-mat-label">{{'street_label' | langPipe}}</mat-label>
+                <mat-select id="streetField"
+                            placeholder=""
+                            name="streetField" 
+                            formControlName="street">
+                    <mat-option [value]="street.name"
+                                *ngFor="let street of streets">{{street.name}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="hasError('street', 'required')">{{'this_field_cannot_be_empty' | langPipe}}</mat-error>
+            </mat-form-field>
+
+            <!-- house number field -->
+            <mat-form-field class="full-width col-12 col-sm-6">
+                <mat-label class="custom-mat-label">{{'house_number_label' | langPipe}}</mat-label>
+                <input matInput 
+                        id="houseNumberField"
+                        placeholder=""
+                        name="houseNumberField" 
+                        formControlName="houseNumber">
+                <mat-error *ngIf="contactForm.controls.houseNumber?.invalid || contactForm.controls.houseNumber?.errors?.required">
+                    {{(contactForm.controls.houseNumber.errors.required)?('this_field_cannot_be_empty' | langPipe):('invalid_input' | langPipe)}}
+                </mat-error>
+
+            </mat-form-field>
+
+        </mat-card-content>
+
+        <!-- Submit button -->
+        <mat-card-actions>
+            <button mat-raised-button
+                    color="primary"
+                    class="col align-self-end"
+                    type="submit">{{((contact.id)?'update_contact_button':'create_contact_button') | langPipe}}</button>
+        </mat-card-actions>
+    </form>
+    <!-- /Contact Form -->
+
+</mat-card>

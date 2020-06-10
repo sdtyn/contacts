@@ -1,0 +1,75 @@
+<mat-card class="card">
+    <mat-card-header>      
+        <mat-card-title>{{title}}</mat-card-title>
+    </mat-card-header>
+    
+        <mat-card-content>
+            
+            
+                <table mat-table [dataSource]="dataSource" class="col-12">
+
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef> {{'id_label' | langPipe}}</th>
+                    <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                  </ng-container>
+              
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef> {{'name_label' | langPipe}} </th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                  </ng-container>
+              
+                  <!-- Surname Column -->
+                  <ng-container matColumnDef="surname">
+                    <th mat-header-cell *matHeaderCellDef> {{'surname_label' | langPipe}} </th>
+                    <td mat-cell *matCellDef="let element"> {{element.surname}} </td>
+                  </ng-container>
+              
+                  <!-- Phone Column -->
+                  <ng-container matColumnDef="phone">
+                    <th mat-header-cell *matHeaderCellDef> {{'phone_label' | langPipe}} </th>
+                    <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
+                  </ng-container>
+              
+                  <!-- Birthdate Column -->
+                  <ng-container matColumnDef="birthdate">
+                    <th mat-header-cell *matHeaderCellDef> {{'birthdate_label' | langPipe}} </th>
+                    <td mat-cell *matCellDef="let element"> {{element.birthdate | date }} </td>
+                  </ng-container>
+
+                  <!-- Edit Column -->
+                  <ng-container matColumnDef="edit">
+                    <th mat-header-cell *matHeaderCellDef class="text-align-right"></th>
+                    <td mat-cell *matCellDef="let element" class="text-align-right">
+                      <a class="cursor-pointer" (click)="editContact(element)"><i class="fa fa-pencil-square-o"></i></a>
+                    </td>
+                  </ng-container>
+
+                  <!-- Delete Column -->
+                  <ng-container matColumnDef="delete">
+                    <th mat-header-cell *matHeaderCellDef class="text-align-right"></th>
+                    <td mat-cell *matCellDef="let element" class="text-align-right">
+                      <a class="cursor-pointer" (click)="deleteContact(element)"><i class="fa fa-times"></i></a>
+                    </td>
+                  </ng-container>
+              
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              
+                <!-- paginatior -->
+                <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+                               #paginator
+                               [length]="totalItems"
+                               [pageIndex]="pageIndex"
+                               [pageSizeOptions]="[5, 10, 25]"
+                               (page)="pageEvent = changePage($event)"></mat-paginator>
+
+        </mat-card-content>
+
+        <mat-card-actions>
+            
+        </mat-card-actions>
+
+</mat-card>
